@@ -2,7 +2,7 @@ const express       = require('express');
 const app           = express();
 const bodyParser    = require('body-parser');
 // const cors          = require('cors');
-const PORT          = 3000;
+const PORT          = 5000;
 const morgan        = require('morgan');
 const mongoose      = require('mongoose');
 
