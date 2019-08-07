@@ -73,5 +73,14 @@ module.exports = {
                 token : token
             })
         });
+    },
+
+  facebookOauth : async (req, res, next) => {
+        signToken(req.user).then((token)=>{
+            res.status(200).json({
+                msg : "Sign in with facebook successfull",
+                token : token
+            })
+        });
     }
 };

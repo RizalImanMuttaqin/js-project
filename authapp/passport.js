@@ -75,31 +75,31 @@ passport.use('googleToken', new GooglePlusTokenStrategy({
 }))
 
 
-// passport.use('facebookToken', new GooglePlusTokenStrategy({
-//     clientID : config.oauth.facebook.clientID,
-//     clientSecret : config.oauth.facebook.clientSecret
-// }, async (accessToken, refreshToken, profile, done) => {
-//     // console.log('accessToken', accessToken);
-//     // console.log('refreshToken', refreshToken);
-//     // console.log('profile', profile);
-
-//     User.findOne({"google.id" : profile.id}).then( (res) => {
-//         if(res){
-//             return done(null, res);
-//         }
-//         const user = new User({
-//             method : 'google',
-//             google:{
-//                 id : profile.id,
-//                 email : profile.emails[0].value,
-//                 name : profile.displayName
-//             }
-//         });
-//         user.save().then( (res) => {
-//             done(null, user);
-//         });
-//     })
-//     .catch( (err) => {
-//         console.log(err);
-//     })
-// }))
+passport.use('facebookToken', new GooglePlusTokenStrategy({
+    clientID : config.oauth.facebook.clientID,
+    clientSecret : config.oauth.facebook.clientSecret
+}, async (accessToken, refreshToken, profile, done) => {
+    console.log('accessToken', accessToken);
+    console.log('refreshToken', refreshToken);
+    console.log('profile', profile);
+    done(null, profile);
+    User.findOne({"facebook.id" : profile.id}).then( (res) => {
+        if(res){
+            return done(null, res);
+        }
+        const user = new User({
+            method : 'facebook',
+            google:{
+                id : profile.id,
+                email : profile.emails[0].value,
+                // name : profile.displayName
+            }
+        });
+        user.save().then( (res) => {
+            done(null, user);
+        });
+    })
+    .catch( (err) => {
+        console.log(err);
+    })
+}))
