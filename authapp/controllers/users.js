@@ -16,7 +16,7 @@ module.exports = {
     signUp : async (req, res, next) => {
         const { email, password } = req.value.body;
         
-        User.findOne({email : email}, function(err, user){
+        User.findOne({"local.email" : email}, function(err, user){
             if(user){
                 res.status(403).json({
                     msg : "user failed to create",
@@ -57,12 +57,21 @@ module.exports = {
                 msg : "Sign in successfull",
                 token : token
             })
-        }) ;
+        });
     },
 
     secret : async (req, res, next) => {
         res.json({
             resource : "resource"
         })
+    },
+
+    googleOauth : async (req, res, next) => {
+        signToken(req.user).then((token)=>{
+            res.status(200).json({
+                msg : "Sign in with google successfull",
+                token : token
+            })
+        });
     }
 };

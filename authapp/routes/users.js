@@ -7,12 +7,15 @@ const { validateBody, schema } = require('../helpers/validator');
 const passport = require('passport');
 const passportSignIn = passport.authenticate('local', {session:false});
 const passportJWT = passport.authenticate('jwt', {session:false});
+const passportGoogle = passport.authenticate('googleToken', {session:false});
+
+
 router.post('/signup', validateBody(schema.authSchemaSignIn), UsersController.signUp)
 
 router.post('/signin', validateBody(schema.authSchemaSignIn), passportSignIn, UsersController.signIn);
 
 router.get('/secret', passportJWT, UsersController.secret);
 
-router.post("/oauth/google", passport.authenticate('googleToken', {session:false}))
+router.post("/oauth/google", passportGoogle, UsersController.googleOauth)
 
 module.exports = router;
