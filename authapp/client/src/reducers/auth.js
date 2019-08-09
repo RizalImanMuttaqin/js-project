@@ -1,6 +1,6 @@
-import { AUTH_SIGN_UP, AUTH_ERROR } from '../actions/types';
+import { AUTH_SIGN_UP, AUTH_SIGN_IN, AUTH_ERROR, AUTH_SIGN_OUT } from '../actions/types';
 const DEFAULT_STATE = {
-    isAuth      : false,
+    isAuthenticated : false,
     token       : '',
     errorMsg    : '',
 }
@@ -8,13 +8,17 @@ const DEFAULT_STATE = {
 export default (state = DEFAULT_STATE, action) =>{
     switch(action.type){
             case AUTH_SIGN_UP:
-                console.log("succes");
+                console.log("succes signup");
                 return { ...state, token: action.payload, isAuthenticated: true, errorMsg: '' }
+            case AUTH_SIGN_IN:
+                console.log("succes login");
+                return { ...state, token: action.payload, isAuthenticated: true, errorMsg: '' }
+            case AUTH_SIGN_OUT:
+                return { ...state, token : action.payload, isAuthenticated: false, errorMsg: ''  }
             case AUTH_ERROR:
-                console.log("failed");
+                console.log("failed login");
                 return { ...state, errorMsg: action.payload }
             default:
-                return false
+                return state;
     }
-    return state;
 };

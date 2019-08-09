@@ -12,6 +12,8 @@ class SignUp extends Component{
         super(props);
         // console.log(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.responseGoogle = this.responseGoogle.bind(this);
+        this.responseFacebook = this.responseFacebook.bind(this);
     }
 
     async onSubmit(formData){
@@ -20,15 +22,30 @@ class SignUp extends Component{
         // console.log(this.props.signUp);
        this.props.signUp(formData).then( (res) => {
         //    console.log(res);
+            if (!this.props.errorMsg){
+                this.props.history.push('/dashboard');
+            }
         });
     }
 
-    responseGoogle(res){
+    async responseGoogle(res){
         console.log("google", res);
+        this.props.oauthGoogle(res.accessToken).then( (res) => {
+            //    console.log(res);
+                if (!this.props.errorMsg){
+                    this.props.history.push('/dashboard');
+                }
+        });
     }
     
-    responseFacebook(res){
+    async responseFacebook(res){
         console.log("facebook", res);
+        this.props.oauthFacebook(res.accessToken).then( (res) => {
+            //    console.log(res);
+                if (!this.props.errorMsg){
+                    this.props.history.push('/dashboard');
+                }
+        });
     }
 
     render(){

@@ -1,7 +1,44 @@
 // ActionCreators -> create/return Action ({}) -> dispatched -> middlewares -> reducers 
 
 import axios from 'axios';
-import { AUTH_SIGN_UP, AUTH_ERROR } from './types';
+import { AUTH_SIGN_UP, AUTH_SIGN_IN, AUTH_ERROR, AUTH_SIGN_OUT, DASHBOARD_GET_DATA } from './types';
+
+
+export const oauthGoogle = data => {
+    return async dispatch => {
+        // console.log(data);
+        axios.post('http://localhost:5000/users/oauth/google', { access_token : data}).then(
+            (res) => {
+                console.log(res);
+                dispatch({
+                    type: AUTH_SIGN_UP,
+                    payload: res.data.token
+                });
+                localStorage.setItem('JWT_TOKEN', res.data.token);
+            }
+        ).catch( (err) =>{
+            console.log(err);
+        });
+    }
+}
+
+export const oauthFacebook = data => {
+    return async dispatch => {
+        // console.log(data);
+        axios.post('http://localhost:5000/users/oauth/facebook', { access_token : data}).then(
+            (res) => {
+                console.log(res);
+                dispatch({
+                    type: AUTH_SIGN_UP,
+                    payload: res.data.token
+                });
+                localStorage.setItem('JWT_TOKEN', res.data.token);
+            }
+        ).catch( (err) =>{
+            console.log(err);
+        });
+    }
+}
 
 export const signUp = data => {
     return async dispatch => {
@@ -21,13 +58,82 @@ export const signUp = data => {
             })
             localStorage.setItem('JWT_TOKEN', res.data.token);
        }).catch( (err) => {
-            // console.log(err);   
-            dispatch({
-                type: AUTH_ERROR,
-                payload: "email already in use"
-            });
+            // console.log(err);
+            if(err){   
+                dispatch({
+                    type: AUTH_ERROR,
+                    payload: "email already in use"
+                });
+            }
        })
        ;
 
+    }
+}
+
+
+// export const signIn = data => {
+//     return async dispatch => {
+//         axios.post("http://localhost:5000/users/signin", data)
+//         .then( (res) => {
+//             dispatch({
+//                 type: AUTH_SIGN_IN,
+//                 payload: res.data.token
+//             })
+//             localStorage.setItem('JWT_TOKEN', res.data.token);
+//         }).catch( (err) => {
+//             if(err){
+//                 dispatch({
+//                     type: AUTH_ERROR,
+//                     payload: "iusername or password invald"
+//                 });
+//                 console.log(err);   
+//             }
+//         });
+//     }
+// }
+
+export const signIn = data => {
+    return async dispatch => {
+      try {
+        let res = await axios.post('http://localhost:5000/users/signin', data);
+        dispatch({
+          type: AUTH_SIGN_IN,
+          payload: res.data.token
+        });
+        localStorage.setItem('JWT_TOKEN', res.data.token);
+      } catch(err) {
+        dispatch({
+          type: AUTH_ERROR,
+          payload: 'Email and password combination isn\'t valid'
+        })
+      }
+    };
+  }
+
+
+export const signOut = data => {
+    return async dispatch => {
+        // console.log(data);
+        dispatch({
+            type: AUTH_SIGN_OUT,
+            payload: ''
+        });
+        localStorage.removeItem('JWT_TOKEN');
+    }
+}
+
+
+export const getSecret = () => {
+    return async dispatch => {
+        axios.get('http://localhost:5000/users/secret').then( (res) => {
+            console.log(res);
+            dispatch({
+                type: DASHBOARD_GET_DATA,
+                payload: res.data.secret
+            })
+        }).catch( (err) => {
+            console.log(err);
+        })
     }
 }

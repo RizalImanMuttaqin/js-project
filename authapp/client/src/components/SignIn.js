@@ -1,11 +1,123 @@
 import React, { Component } from 'react';
+import { reduxForm, Field } from 'redux-form';
+import CustomInput from './CustomInput'
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import * as actions from '../actions';
+import GoogleLogin from 'react-google-login';
+import FacebookLogin from 'react-facebook-login';
 
-export default class SignIn extends Component{
+class SignIn extends Component{
+    constructor(props){
+        super(props);
+        // console.log(this);
+        this.onSubmit = this.onSubmit.bind(this);
+        this.responseGoogle = this.responseGoogle.bind(this);
+        this.responseFacebook = this.responseFacebook.bind(this);
+    }
+
+    async onSubmit(formData){
+       this.props.signIn(formData).then( (res) => {
+            console.log(this.props)
+            if (!this.props.errorMsg){
+                this.props.history.push('/dashboard');
+            }
+        });
+    }
+
+    async responseGoogle(res){
+        this.props.oauthGoogle(res.accessToken).then( (res) => {
+                if (!this.props.errorMsg){
+                    this.props.history.push('/dashboard');
+                }
+        });
+    }
+    
+    async responseFacebook(res){
+        this.props.oauthFacebook(res.accessToken).then( (res) => {
+                if (!this.props.errorMsg){
+                    this.props.history.push('/dashboard');
+                }
+        });
+    }
+
     render(){
+        const { handleSubmit } = this.props;
         return(
-            <div>
-                This is a SignIn component
+            <div className="row">
+                <div className="col">
+                    <form onSubmit={ handleSubmit(this.onSubmit) }>
+                        <fieldset>
+                            <Field
+                                name="email"
+                                type="text"
+                                id="email"
+                                label = "Enter your email"
+                                placeholder="example@example.com"
+                                component={ CustomInput } />
+                        </fieldset>
+                        <fieldset>
+                            <Field
+                                name="password"
+                                type="password"
+                                label="Enter your password"
+                                placeholder="yourpassword"
+                                id="password"
+                                component={ CustomInput } />
+                        </fieldset>
+
+                        { this.props.errorMsg ? 
+                            <div className="alert alert-danger">
+                              { this.props.errorMsg }  
+                            </div> 
+                        : null}
+                        <button type="submit" className="btn btn-primary">Sign In</button>
+                    </form>
+                </div>
+                <div className="col">
+                    <div className="text-center">
+                        <div className="alert alert-primary" >
+                            Or Sign In with 
+                        </div>
+                        {/* <button className="btn btn-primary" style={{marginRight:"20px"}}><span className="fa fa-facebook"></span> Facebook</button>
+                        <button className="btn btn-danger"><span className="fa fa-google"></span> Google</button> */}
+                        <div style={{marginBottom:"20px"}}>
+                            <FacebookLogin
+                                appId="2548542715176230"
+                                autoLoad={false}
+                                textButton="facebook"
+                                fields="name, email, picture"
+                                callback={this.responseFacebook}
+                                size="small"
+                                />
+                        </div>
+                        <div>
+                            <GoogleLogin
+                                clientId="640481382013-9mmt4q5v3i6j0d0euognelr3hl581tps.apps.googleusercontent.com"
+                                textButton="google"
+                                // fields="name, email, picture"
+                                onSuccess={this.responseGoogle}
+                                onFailure={this.responseGoogle}
+                                 />
+                        </div>
+                        
+                    </div>
+
+                </div>
             </div>
         )
     }
 };
+
+export default compose(
+    connect(mapStateToProps, actions),
+    reduxForm({form : 'signin'})
+)(SignIn)
+
+function mapStateToProps (state){
+    return {
+        errorMsg: state.auth.errorMsg
+    }
+}
+// (SignUp)
+// reduxForm({form : 'signup'})(SignUp);
