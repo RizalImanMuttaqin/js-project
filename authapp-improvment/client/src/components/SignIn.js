@@ -35,7 +35,8 @@ class SignIn extends Component{
     
     async responseFacebook(res){
         this.props.oauthFacebook(res.accessToken).then( (res) => {
-                if (!this.props.errorMsg){
+            console.log(res);    
+            if (!this.props.errorMsg){
                     this.props.history.push('/dashboard');
                 }
         });

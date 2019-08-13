@@ -49,9 +49,9 @@ passport.use('googleToken', new GooglePlusTokenStrategy({
     clientID : config.oauth.google.clientID,
     clientSecret : config.oauth.google.clientSecret
 }, async (accessToken, refreshToken, profile, done) => {
-    // console.log('accessToken', accessToken);
-    // console.log('refreshToken', refreshToken);
-    // console.log('profile', profile);
+    console.log('accessToken', accessToken);
+    console.log('refreshToken', refreshToken);
+    console.log('profile', profile);
 
     User.findOne({"google.id" : profile.id}).then( (res) => {
         if(res){

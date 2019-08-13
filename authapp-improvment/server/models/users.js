@@ -3,9 +3,9 @@ const Schema    = mongoose.Schema;
 const bcrypt = require('bcryptjs');
 let usersSchema = new Schema({
 
-    method: {
-        type: String,
-        enum: ['local', 'google', 'facebook'],
+    methods: {
+        type: [String],
+        // enum: ['local', 'google', 'facebook'],
         required: true
     },
     local: {
@@ -37,7 +37,7 @@ let usersSchema = new Schema({
 
 usersSchema.pre('save', function (next){
     // console.log(this);
-    if(this.method !== 'local'){
+    if(!this.methods.includes('local')){
         console.log(this.method);
         next();
     } else{         

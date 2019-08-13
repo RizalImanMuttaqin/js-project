@@ -15,9 +15,13 @@ router.post('/signup', validateBody(schema.authSchemaSignIn), UsersController.si
 
 router.post('/signin', validateBody(schema.authSchemaSignIn), passportSignIn, UsersController.signIn);
 
-router.get('/secret', passportJWT, UsersController.secret);
+router.get('/secret', passportJWT, UsersController.dashboard);
 
-router.post("/oauth/google", passportGoogle, UsersController.googleOauth)
-router.post("/oauth/facebook", passportFacebook, UsersController.facebookOauth)
+router.post("/oauth/google", passportGoogle, UsersController.googleOauth);
+router.post("/oauth/facebook", passportFacebook, UsersController.facebookOauth);
+
+router.post("/oauth/link/google", passportJWT, passport.authorize('googleToken', { session:false }), UsersController.linkGoogle);
+
+router.post("/oauth/link/facebook", passportJWT, passport.authorize('facebookToken', { session:false }), UsersController.linkFacebook);
 
 module.exports = router;
