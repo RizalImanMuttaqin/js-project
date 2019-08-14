@@ -5,9 +5,13 @@ const cors          = require('cors');
 const PORT          = 5000;
 const morgan        = require('morgan');
 const mongoose      = require('mongoose');
+const cookieParser  = require('cookie-parser');
 
-
-app.use(cors());
+app.use(cookieParser())
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 app.use(morgan('dev'));
 app.use(bodyParser());
 // app.use(bodyParser.json());

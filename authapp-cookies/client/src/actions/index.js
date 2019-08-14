@@ -13,18 +13,15 @@ import {
     AUTH_UNLINK_FACEBOOK
  } from './types';
 
-
+axios.defaults.withCredentials = true;
 export const oauthGoogle = data => {
     return async dispatch => {
-        // console.log(data);
         try{
+            console.log(data); 
             const res = await axios.post('http://localhost:5000/users/oauth/google', { access_token : data});
             dispatch({
                 type: AUTH_SIGN_UP,
-                payload: res.data
             });
-            axios.defaults.headers.common['Authorization']=res.data.token;
-            localStorage.setItem('JWT_TOKEN', res.data.token);
         } catch (err){
             console.log(err);
         };
@@ -39,10 +36,7 @@ export const oauthFacebook = data => {
             console.log(res);
             dispatch({
                 type: AUTH_SIGN_UP,
-                payload: res.data
             });
-            axios.defaults.headers.common['Authorization']=res.data.token;
-            localStorage.setItem('JWT_TOKEN', res.data.token);
         }catch (err) {
             console.log(err);
         };
@@ -62,10 +56,7 @@ export const signUp = data => {
             const res = await axios.post("http://localhost:5000/users/signup", data);
             dispatch({
                 type: AUTH_SIGN_UP,
-                payload: res.data
             });
-            axios.defaults.headers.common['Authorization']=res.data.token;
-            localStorage.setItem('JWT_TOKEN', res.data.token);
         }catch (err)  {
             // console.log(err);
             if(err){   
@@ -85,10 +76,7 @@ export const signIn = data => {
         let res = await axios.post('http://localhost:5000/users/signin', data);
         dispatch({
           type: AUTH_SIGN_IN,
-          payload: res.data
         });
-        axios.defaults.headers.common['Authorization']=res.data.token;
-        localStorage.setItem('JWT_TOKEN', res.data.token);
       } catch(err) {
         dispatch({
           type: AUTH_ERROR,
@@ -99,15 +87,14 @@ export const signIn = data => {
   }
 
 
-export const signOut = data => {
+export const signOut = () => {
     return async dispatch => {
         // console.log(data);
+        let res = await axios.get('http://localhost:5000/users/signout');
         dispatch({
             type: AUTH_SIGN_OUT,
             payload: ''
         });
-        axios.defaults.headers.common['Authorization']='';
-        localStorage.removeItem('JWT_TOKEN');
     }
 }
 
@@ -169,5 +156,19 @@ export const unlinkFacebook = data => {
             type : AUTH_UNLINK_FACEBOOK,
             payload : res.data
         })
+    }
+}
+
+export const checkAuth = data => {
+    return async dispatch => {
+        try{
+            const res = await axios.get('http://localhost:5000/users/status');
+            dispatch({
+                type: AUTH_SIGN_IN,
+            });
+            console.log("user is auth ")
+        }catch(err){
+            console.log("error check status", err);
+        }
     }
 }

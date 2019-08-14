@@ -66,17 +66,13 @@ module.exports = {
                 password : password
             }
         });
-        user.save().then( user =>{
-            signToken(user).then((token)=>{
-                res.status(200).json({
-                    msg : "user created",
-                    new_user : user,
-                    token : token,
-                })
-            })
-        })
-        .catch(err=>{
-            res.status(400).send("Sign up failed "+err);
+        await user.save();
+        const token = await signToken(user);
+        // console.log("token", token);
+        res.cookie('access_token', token, { httpOnly : true });
+        res.status(200).json({
+            msg : "user created",
+            new_user : user,
         });
         // user.save();
     },
@@ -85,12 +81,22 @@ module.exports = {
         //generate token
         console.log("SignIn");
         signToken(req.user).then((token)=>{
+            res.cookie('access_token', token, { httpOnly : true });
             res.status(200).json({
                 msg : "Sign in successfull",
-                token : token,
 
             })
         });
+    },
+
+    signOut : async (req, res, next) => {
+        //generate token
+        console.log("SignIn");
+        res.clearCookie('access_token');        
+        res.status(200).json({
+            success : true,
+            msg : "Sign out successfull",
+        })
     },
     
     dashboard : async (req, res, next) => {
@@ -102,18 +108,18 @@ module.exports = {
     
     googleOauth : async (req, res, next) => {
         signToken(req.user).then((token)=>{
+            res.cookie('access_token', token, { httpOnly : true });
             res.status(200).json({
                 msg : "Sign in with google successfull",
-                token : token,
             })
         });
     },
 
     facebookOauth : async (req, res, next) => {
         signToken(req.user).then((token)=>{
+            res.cookie('access_token', token, { httpOnly : true });
             res.status(200).json({
                 msg : "Sign in with facebook successfull",
-                token : token,
             })
         });
     },
@@ -164,6 +170,12 @@ module.exports = {
             success : true,
             methods : req.user.methods,
             msg     : "Successfully unlinked account with facebook"
+        })
+    },
+
+    checkAuth : async (req, res, next) => {
+        res.json({
+            resource : true,
         })
     },
 };

@@ -8,9 +8,18 @@ const GooglePlusTokenStrategy = require('passport-google-plus-token');
 const config =require('./config/config');
 const FacebookTokenStrategy = require('passport-facebook-token');
 
+const cookieExtractor = req => {
+    let token = null;
+    if (req && req.cookies){
+        console.log('req.cookies', req.cookies);
+        token = req.cookies['access_token'];
+    }
+    return token;
+}
+
 //JSON WEB TOKENS STRATEGY
 passport.use(new JwtStrategy({ 
-    jwtFromRequest : ExtractJwt.fromHeader('authorization'),
+    jwtFromRequest : cookieExtractor,
     secretOrKey : config.JWT_SECRET,
     passReqToCallback : true
 },

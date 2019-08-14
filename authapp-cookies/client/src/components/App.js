@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
 import Header from './Header';
+import * as actions from '../actions';
+class App extends Component {
 
-
-export default (props) => {
-    return (
-        <div>
-            <Header />
-            <div className="container">
-                { props.children }
+    componentDidMount(){
+        this.props.checkAuth();
+    }
+    render(){
+        return (
+            <div>
+                <Header />
+                <div className="container">
+                    { this.props.children }
+                </div>
             </div>
-        </div>
-    );
-};
+        );
+    }
+}
+
+export default connect(null, actions)(App);

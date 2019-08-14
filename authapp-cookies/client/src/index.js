@@ -19,18 +19,12 @@ import SignIn from './components/SignIn';
 import Dashboard from './components/Dashboard';
 import reducers from './reducers';
 import authGuard from './components/HOCs/authGuard';
-const jwtToken = localStorage.getItem('JWT_TOKEN');
-axios.defaults.headers.common['Authorization']=jwtToken;
+axios.defaults.withCredentials = true;
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 ReactDOM.render(
-    <Provider store={createStore(reducers, {
-        auth: {
-            token : jwtToken,
-            isAuthenticated : jwtToken ? true : false
-        }
-    }, applyMiddleware(reduxThunk))}>
+    <Provider store={createStore(reducers, {}, applyMiddleware(reduxThunk))}>
     <BrowserRouter>
     <App>
         <Route exact path="/" component={Home} />

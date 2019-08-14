@@ -46,7 +46,7 @@ import * as actions from '../actions';
                             <FacebookLogin
                                 appId="2548542715176230"
                                 isDisabled={this.props.methods.includes('facebook') ? true : false}
-                                    textButton="facebook"
+                                    textButton="Facebook"
                                     fields="name,email,picture"
                                     callback={this.linkFacebook}
                                     cssClass="btn btn-outline-primary"

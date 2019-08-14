@@ -15,6 +15,8 @@ router.post('/signup', validateBody(schema.authSchemaSignIn), UsersController.si
 
 router.post('/signin', validateBody(schema.authSchemaSignIn), passportSignIn, UsersController.signIn);
 
+router.get('/signout', passportJWT, UsersController.signOut);
+
 router.get('/secret', passportJWT, UsersController.dashboard);
 
 router.post("/oauth/google", passportGoogle, UsersController.googleOauth);
@@ -28,5 +30,7 @@ router.post("/oauth/unlink/google", passportJWT,  UsersController.unlinkGoogle);
 router.post("/oauth/unlink/facebook", passportJWT,  UsersController.unlinkFacebook);
 
 router.post("/oauth/link/facebook", passportJWT, passport.authorize('facebookToken', { session:false }), UsersController.linkFacebook);
+
+router.get('/status', passportJWT, UsersController.checkAuth);
 
 module.exports = router;
