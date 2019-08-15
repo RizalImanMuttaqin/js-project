@@ -29,4 +29,16 @@ router.post("/oauth/unlink/facebook", passportJWT,  UsersController.unlinkFacebo
 
 router.post("/oauth/link/facebook", passportJWT, passport.authorize('facebookToken', { session:false }), UsersController.linkFacebook);
 
+router.get("/todo/", UsersController.todoList);
+
+router.post("/todo/create", passportJWT, UsersController.createTodo);
+
+router.get("/todo/detail/:id", passportJWT, UsersController.detailTodo);
+
+router.get("/todo/list", passportJWT, UsersController.todoListId);
+
+router.post("/todo/update/:id", passportJWT, UsersController.todoUpdate);
+
+router.post("/todo/delete/:id", passportJWT, UsersController.todoDelete);
+
 module.exports = router;

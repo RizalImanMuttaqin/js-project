@@ -15,12 +15,13 @@ passport.use(new JwtStrategy({
     passReqToCallback : true
 },
  async (req, payload, done) => {
-    //fing user in token
+    //find user in token
     try{
         User.findById(payload.sub, (err, user) => {
             if(!user){
                 return done(null, false);
             }
+            // console.log(payload.sub);
             req.user = user;
             done(null, user);
         })
@@ -66,14 +67,23 @@ passport.use('googleToken', new GooglePlusTokenStrategy({
 
         if(req.user){
             // already login, linking acoount
-            req.user.methods.push('google');
-            req.user.google ={
-                id : profile.id,
-                email : profile.emails[0].value,
-                name : profile.displayName
+            let email = profile.emails[0].value;
+            let foundUser = await User.findOne({$or: [{'facebook.email': email}, {'google.email': email}]});
+            if(foundUser){
+                // console.log("email sudah terhubung ke user lain");
+                return done(null, "error");
+                // return done("email sudah terhubung ke user lain")
+            }else{
+                req.user.methods.push('google');
+                req.user.google ={
+                    id : profile.id,
+                    email : email,
+                    name : profile.displayName
+                }
+                await req.user.save();
+                return done(null, req.user);
             }
-            await req.user.save();
-            return done(null, req.user);
+            
         }else{
             let existingUser = await User.findOne({"google.id": profile.id});
             if (existingUser){
@@ -128,14 +138,22 @@ passport.use('facebookToken', new FacebookTokenStrategy({
         
         if(req.user){
             // already login, linking acoount
-            req.user.methods.push('facebook');
-            req.user.facebook ={
-                id : profile.id,
-                email : profile.emails[0].value,
-                name : profile.displayName
+            let email = profile.emails[0].value;
+            let foundUser = await User.findOne({$or: [{'facebook.email': email}, {'google.email': email}]});
+            if(foundUser){
+                // console.log("email sudah terhubung ke user lain");
+                return done(null, "error");
+                // return done("email sudah terhubung ke user lain")
+            }else{
+                req.user.methods.push('facebook');
+                req.user.facebook ={
+                    id : profile.id,
+                    email : profile.emails[0].value,
+                    name : profile.displayName
+                }
+                await req.user.save();
+                return done(null, req.user);
             }
-            await req.user.save();
-            return done(null, req.user);
         }else{
             // console.log(req.user);
             let existingUser = await User.findOne({"facebook.id": profile.id});

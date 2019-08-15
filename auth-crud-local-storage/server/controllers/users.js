@@ -1,4 +1,5 @@
 const User = require('../models/users');
+const Todo = require('../models/todos')
 const JWT  = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/config')
 signToken = async function (user) {
@@ -11,9 +12,8 @@ signToken = async function (user) {
     }, JWT_SECRET);
 }
 
-
 module.exports = {
-    signUp : async (req, res, next) => {
+    signUp : async (req, res, _next) => {
         const { email, password } = req.value.body;
         
         let foundUser = await User.findOne({$or: [{'local.email': email}, {'facebook.email': email}, {'google.email': email}]});
@@ -81,7 +81,7 @@ module.exports = {
         // user.save();
     },
     
-    signIn : async (req, res, next) => {
+    signIn : async (req, res, _next) => {
         //generate token
         console.log("SignIn");
         signToken(req.user).then((token)=>{
@@ -93,14 +93,14 @@ module.exports = {
         });
     },
     
-    dashboard : async (req, res, next) => {
+    dashboard : async (req, res, _next) => {
         res.json({
             resource : "resource",
             methods : req.user.methods
         })
     },
     
-    googleOauth : async (req, res, next) => {
+    googleOauth : async (req, res, _next) => {
         signToken(req.user).then((token)=>{
             res.status(200).json({
                 msg : "Sign in with google successfull",
@@ -109,7 +109,7 @@ module.exports = {
         });
     },
 
-    facebookOauth : async (req, res, next) => {
+    facebookOauth : async (req, res, _next) => {
         signToken(req.user).then((token)=>{
             res.status(200).json({
                 msg : "Sign in with facebook successfull",
@@ -118,15 +118,26 @@ module.exports = {
         });
     },
 
-    linkGoogle : async (req, res, next) => {
-        res.status(200).json({
-            success : true,
-            methods : req.user.methods,
-            msg     : "Successfully linked account with google"
-        })
+    linkGoogle : async (req, res, _next) => {
+        // console.log("req controoler usres", req)
+        // console.log("req controoler usres", req)
+        if(req.account == 'error'){
+            res.status(200).json({
+                success : false,
+                methods : req.user.methods,
+                msg     : "email already linked with other users"
+            })
+        }else{
+            res.status(200).json({
+                success : true,
+                methods : req.user.methods,
+                msg     : "Successfully linked account with google"
+            })
+        }
+        
     },
 
-    unlinkGoogle : async (req, res, next) => {
+    unlinkGoogle : async (req, res, _next) => {
         if(req.user.google){
             req.user.google = undefined;
         }
@@ -143,15 +154,23 @@ module.exports = {
     },
 
 
-    linkFacebook : async (req, res, next) => {
-        res.status(200).json({
-            success : true,
-            methods : req.user.methods,
-            msg     : "Successfully linked account with facebook"
-        })
+    linkFacebook : async (req, res, _next) => {
+        if(req.account == 'error'){
+            res.status(200).json({
+                success : false,
+                methods : req.user.methods,
+                msg     : "facebook already linked with other users"
+            })
+        }else{
+            res.status(200).json({
+                success : true,
+                methods : req.user.methods,
+                msg     : "facebook linked account with google"
+            })
+        }
     },
 
-    unlinkFacebook : async (req, res, next) => {
+    unlinkFacebook : async (req, res, _next) => {
         if(req.user.facebook){
             req.user.facebook = undefined;
         }
@@ -165,5 +184,152 @@ module.exports = {
             methods : req.user.methods,
             msg     : "Successfully unlinked account with facebook"
         })
+    },
+
+
+    todoList : async (_req, res, _next) => {
+        try{
+            const data = await Todo.aggregate([
+                { $lookup:
+                    {
+                        from: 'users',
+                        localField: 'todo_create_by',
+                        foreignField: '_id',
+                        as: 'create_by'
+                    }
+                }
+            ]);
+            res.status(200).json({
+                success : true,
+                data    : data,
+                msg     : "success get todos"
+            })
+        } catch(err){
+            res.status(200).json({
+                success : false,
+                msg     : err
+            })
+        }
+    },
+
+    createTodo : async (req, res, _next) => {
+        try{
+            // console.log("ini req.user", req.user);
+            const user_id = req.user._id;
+            let newTodo = new Todo({
+                todo_description : req.body.description,
+                todo_responsible : req.body.responsible,
+                todo_priority    : req.body.priority,
+                todo_create_by   : user_id,
+            })
+            newTodo = await newTodo.save();
+            res.status(200).json({
+                success : true,
+                data    : newTodo,
+                msg     : "successfully create todo"
+            })
+        } catch(err){
+            res.status(200).json({
+                success : false,
+                msg     : err
+            })
+        }
+    },
+
+    detailTodo : async (req, res, _next) => {
+        try{
+            // console.log("ini req.user", req.user);
+            let user_id = req.user._id;
+            let todo_id = req.params.id;
+            data = await Todo.findOne({$and: [{_id: todo_id}, {todo_create_by: user_id}]});
+            res.status(200).json({
+                success : true,
+                data    : data,
+                msg     : "success get todo"
+            })
+        } catch(err){
+            res.status(200).json({
+                success : false,
+                msg     : err
+            })
+        }
+    },
+
+    todoListId : async (req, res, _next) => {
+        try{
+            // console.log("ini req.user", req.user);
+            let user_id = req.user._id;
+            data = await Todo.find({ todo_create_by : user_id });
+            res.status(200).json({
+                success : true,
+                data    : data,
+                msg     : "success get todo by id_user"
+            })
+        } catch(err){
+            res.status(200).json({
+                success : false,
+                msg     : err
+            })
+        }
+    },
+
+    todoUpdate : async (req, res, _next) => {
+        try{
+            // console.log("ini req.user", req.user);
+            let user_id = req.user._id;
+            let todo_id = req.params.id;
+            let todo = await Todo.findOne({$and: [{_id: todo_id}, {todo_create_by: user_id}]});
+            if(!todo){
+                return res.status(200).json({
+                    success : false,
+                    msg     : "data not found"
+                })
+            }else{
+                console.log(todo);
+                todo.todo_description = req.body.description;
+                todo.todo_responsible = req.body.responsible;
+                todo.todo_priority    = req.body.priority;
+                todo.todo_completed   = req.body.completed;
+                todo.todo_completed   = req.body.completed;
+                todo = await todo.save();
+                res.status(200).json({
+                    success : true,
+                    data    : todo,
+                    msg     : "success update todo"
+                })
+            }
+        } catch(err){
+            res.status(200).json({
+                success : false,
+                msg     : err
+            })
+        }
+    },
+    
+    todoDelete : async (req, res, _next) => {
+        try{
+            // console.log("ini req.user", req.user);
+            let user_id = req.user._id;
+            let todo_id = req.params.id;
+            let todo = await Todo.findOne({$and: [{_id: todo_id}, {todo_create_by: user_id}]});
+            if(!todo){
+                return res.status(200).json({
+                    success : false,
+                    msg     : "data not found"
+                })
+            }else{
+                todo = await Todo.deleteOne({$and: [{_id: todo_id}, {todo_create_by: user_id}]});
+                res.status(200).json({
+                    success : true,
+                    // data    : todo,
+                    msg     : "todo deleted"
+                })
+            }
+        } catch(err){
+            res.status(200).json({
+                success : false,
+                msg     : err
+            })
+        }
     },
 };

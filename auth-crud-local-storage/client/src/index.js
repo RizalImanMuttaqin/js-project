@@ -19,6 +19,9 @@ import SignIn from './components/SignIn';
 import Dashboard from './components/Dashboard';
 import reducers from './reducers';
 import authGuard from './components/HOCs/authGuard';
+import './index.css';
+
+
 const jwtToken = localStorage.getItem('JWT_TOKEN');
 axios.defaults.headers.common['Authorization']=jwtToken;
 // If you want your app to work offline and load faster, you can change
