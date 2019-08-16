@@ -88,9 +88,10 @@ export const signIn = data => {
           type: AUTH_SIGN_IN,
           payload: res.data
         });
-        axios.defaults.headers.common['Authorization']=res.data.token;
         localStorage.setItem('JWT_TOKEN', res.data.token);
+        axios.defaults.headers.common['Authorization']=res.data.token;
       } catch(err) {
+        console.log(err);
         dispatch({
           type: AUTH_ERROR,
           payload: 'Email and password combination isn\'t valid'
@@ -116,7 +117,7 @@ export const signOut = data => {
 export const getDashboard = () => {
     return async dispatch => {
         try{
-            const res = await axios.get('http://localhost:5000/users/secret');
+            const res = await axios.get('http://localhost:5000/users/todo/list');
             console.log(res.data.resource);
             dispatch({
                 type: DASHBOARD_GET_DATA,
@@ -186,5 +187,40 @@ export const getTodoList = () => {
         } catch(err){
             console.log(err);
         }
+    }
+}
+
+
+export const deleteTodo = data => {
+    return async dispatch => {
+        const res = await axios.get('http://localhost:5000/users/todo/delete/'+data);
+        // dispatch({
+        //     type : AUTH_LINK_GOOGLE,
+        //     payload : res.data
+        // })
+    }
+}
+
+export const createTodo = data => {
+    return async dispatch => {
+        console.log(data);
+        const res = await axios.post('http://localhost:5000/users/todo/create', data);
+        return res.data;
+    }
+}
+
+export const getTodoById = data => {
+    return async dispatch => {
+        console.log(data);
+        const res = await axios.get('http://localhost:5000/users/todo/detail/'+data);
+        return res.data;
+    }
+}
+
+export const updateTodo = (id, data) => {
+    return async dispatch => {
+        console.log(data);
+        const res = await axios.post('http://localhost:5000/users/todo/update/'+id, data);
+        return res.data;
     }
 }

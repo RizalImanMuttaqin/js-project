@@ -39,6 +39,6 @@ router.get("/todo/list", passportJWT, UsersController.todoListId);
 
 router.post("/todo/update/:id", passportJWT, UsersController.todoUpdate);
 
-router.post("/todo/delete/:id", passportJWT, UsersController.todoDelete);
+router.get("/todo/delete/:id", passportJWT, UsersController.todoDelete);
 
 module.exports = router;

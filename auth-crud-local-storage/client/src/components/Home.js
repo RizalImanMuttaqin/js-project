@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import * as actions from '../actions';
-import { isUndefined, isNull } from 'util';
 
 class Home extends Component{
     async componentDidMount(){
@@ -10,9 +9,9 @@ class Home extends Component{
     }
     render(){
         return (
-            <div>
+            <div>                
                 <h3>Todo List</h3>
-                <table className="table table-striped" style={{marginTop : 20 }}>
+                <table className="table table-striped" style={{marginTop:20}}>
                     <thead>
                         <tr>
                             <th>Description</th>
@@ -22,22 +21,20 @@ class Home extends Component{
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            this.props.todo.data == 0
-                            ? 'Loading list...'
-                            : this.props.todo.data.map(todo => (
-                                <tr>
-                                    <td className={todo.todo_completed ? 'completed' : ''}>{todo.todo_description}</td>
-                                    <td className={todo.todo_completed ? 'completed' : ''}>{todo.todo_responsible}</td>
-                                    <td className={todo.todo_completed ? 'completed' : ''}>{todo.todo_priority}</td>
+                        {this.props.todo.data <= 0
+                            ? <tr><td colspan="4" style={{textAlign:"center"}}>Data empty</td></tr>
+                            : this.props.todo.data.map((todo, key) => (
+                                <tr key={key}>
+                                    <td className={todo.todo_completed ? 'completed' : null }>{todo.todo_description}</td>
+                                    <td className={todo.todo_completed ? 'completed' : null }>{todo.todo_responsible}</td>
+                                    <td className={todo.todo_completed ? 'completed' : null }>{todo.todo_priority}</td>
                                     <td>
-                                        <b>google</b> : { todo.create_by[0].google ? todo.create_by[0].google.name : ''}<br/>
-                                        <b>facebook</b> : { todo.create_by[0].facebook ? todo.create_by[0].facebook.name : ''}<br/>
-                                        <b>local</b>  : { todo.create_by[0].local ? todo.create_by[0].local.email : '' }<br/>
+                                        <b>google</b> : { todo.create_by[0].google ? todo.create_by[0].google.name : null }<br/>
+                                        <b>facebook</b> : { todo.create_by[0].facebook ? todo.create_by[0].facebook.name : null }<br/>
+                                        <b>local</b>  : { todo.create_by[0].local ? todo.create_by[0].local.email : null }<br/>
                                     </td>
                                 </tr>
-                            ))
-                        }
+                            ))}
                     </tbody>
                 </table>
             </div>
@@ -46,7 +43,6 @@ class Home extends Component{
 };
 
 function mapStateToProps(state){
-    console.log("state at home", state)
     return{
         todo: state.data,
     }

@@ -17,6 +17,8 @@ import Home from './components/Home';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Dashboard from './components/Dashboard';
+import CreateTodo from './components/CreateTodo';
+import EditTodo from './components/EditTodo';
 import reducers from './reducers';
 import authGuard from './components/HOCs/authGuard';
 import './index.css';
@@ -39,6 +41,8 @@ ReactDOM.render(
         <Route exact path="/" component={Home} />
         <Route exact path="/signup" component={SignUp} />
         <Route exact path="/signin" component={SignIn} />
+        <Route exact path="/create" component={CreateTodo} />
+        <Route exact path="/edit/:id?" component={EditTodo} />
         <Route exact path="/dashboard" component={authGuard(Dashboard)} />
     </App>
     </BrowserRouter>

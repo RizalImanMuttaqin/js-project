@@ -1,6 +1,7 @@
 const User = require('../models/users');
 const Todo = require('../models/todos')
 const JWT  = require('jsonwebtoken');
+const Bcrypt = require('../helpers/bcrypt')
 const { JWT_SECRET } = require('../config/config')
 signToken = async function (user) {
     // console.log(JWT_SECRET);  
@@ -58,12 +59,12 @@ module.exports = {
         //         msg : "success link account to facebook",
         //         token : token })
         // }
-
+        // console.log(Bcrypt.hashingPassword(password));
         const user = new User({
             methods : ['local'],
             local : {
                 email : email,
-                password : password
+                password : await Bcrypt.hashingPassword(password)
             }
         });
         user.save().then( user =>{
@@ -195,8 +196,8 @@ module.exports = {
                         from: 'users',
                         localField: 'todo_create_by',
                         foreignField: '_id',
-                        as: 'create_by'
-                    }
+                        as: 'create_by',
+                    },
                 }
             ]);
             res.status(200).json({
@@ -259,9 +260,22 @@ module.exports = {
         try{
             // console.log("ini req.user", req.user);
             let user_id = req.user._id;
-            data = await Todo.find({ todo_create_by : user_id });
+            data = await Todo.aggregate([
+                {$match:{ todo_create_by : user_id }},
+                { $lookup:
+                    {
+                        from: 'users',
+                        localField: 'todo_create_by',
+                        foreignField: '_id',
+                        as: 'create_by'
+                    }
+                }
+              ]);
+
+            console.log(data);
             res.status(200).json({
                 success : true,
+                methods : req.user.methods,
                 data    : data,
                 msg     : "success get todo by id_user"
             })
@@ -315,6 +329,7 @@ module.exports = {
             if(!todo){
                 return res.status(200).json({
                     success : false,
+                    methods : req.user.methods,
                     msg     : "data not found"
                 })
             }else{
@@ -322,6 +337,7 @@ module.exports = {
                 res.status(200).json({
                     success : true,
                     // data    : todo,
+                    methods : req.user.methods,
                     msg     : "todo deleted"
                 })
             }

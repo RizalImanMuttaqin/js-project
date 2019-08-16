@@ -1,7 +1,7 @@
 import { DASHBOARD_GET_DATA, AUTH_LINK_GOOGLE, AUTH_LINK_FACEBOOK, AUTH_UNLINK_GOOGLE, AUTH_UNLINK_FACEBOOK  } from '../actions/types';
 
 const DEFAULT_STATE = {
-    secret    : '',
+    data_todo    : '',
     methods   : [],
 }
 
@@ -26,7 +26,7 @@ export default (state = DEFAULT_STATE, action) =>{
             case DASHBOARD_GET_DATA:
                 console.log("try to get data secret");
                 // console.log("action", action.payload)
-                return { ...state, secret: action.payload.resource, methods: action.payload.methods }
+                return { ...state, data_todo: action.payload.data, methods: action.payload.methods }
             default:
                 return state;
     }

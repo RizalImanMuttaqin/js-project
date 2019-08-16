@@ -35,24 +35,27 @@ let usersSchema = new Schema({
     
 });
 
-usersSchema.pre('save', function (next){
-    // console.log(this);
-    if(!this.methods.includes('local')){
-        console.log(this.method);
-        next();
-    } else{         
-        bcrypt.genSalt(10).then((salt) => {
-            bcrypt.hash(this.local.password, salt)
-            .then((passhash) => {
-                this.local.password = passhash;
-                next();
-            }).catch( (err)=>{
-                console.log(err);
-            })
-        })
-    }
+// usersSchema.pre('save', function (next){
+//     // console.log(this);
+//     if(!this.methods.includes('local')){
+//         console.log(this.method);
+//         next();
+//     } else{         
+//         bcrypt.genSalt(10).then((salt) => {
+//             bcrypt.hash(this.local.password, salt)
+//             .then((passhash) => {
+//                 this.local.password = passhash;
+//                 next();
+//             }).catch( (err)=>{
+//                 console.log(err);
+//             })
+//         })
+//     }
     
-});
+// });
+
+
+
 
 usersSchema.methods.isValidPassword = async function(npass){
     return bcrypt.compare(npass, this.local.password).then((res)=>{

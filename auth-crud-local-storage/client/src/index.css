@@ -15,3 +15,8 @@ body {
   .completed{
     text-decoration: line-through;
   }
+  
+  .btn:focus {
+    outline: none !important;
+    outline-offset: none !important;
+}
