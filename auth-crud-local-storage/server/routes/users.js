@@ -41,4 +41,9 @@ router.post("/todo/update/:id", passportJWT, UsersController.todoUpdate);
 
 router.get("/todo/delete/:id", passportJWT, UsersController.todoDelete);
 
+router.get("/req", (req, res) => {
+    console.log(req);
+    res.json(req);
+})
+
 module.exports = router;

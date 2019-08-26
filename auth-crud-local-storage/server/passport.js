@@ -1,6 +1,6 @@
 const passport = require('passport');
 const JwtStrategy = require('passport-jwt').Strategy;
-const { ExtractJwt } = require('passport-jwt');
+const Extract = require('passport-jwt').ExtractJwt;
 // const { JWT_SECRET } = require('./config/config');
 const LocalStrategy = require('passport-local');
 const User = require('./models/users');
@@ -10,7 +10,7 @@ const FacebookTokenStrategy = require('passport-facebook-token');
 
 //JSON WEB TOKENS STRATEGY
 passport.use(new JwtStrategy({ 
-    jwtFromRequest : ExtractJwt.fromHeader('authorization'),
+    jwtFromRequest : Extract.fromAuthHeaderAsBearerToken(),
     secretOrKey : config.JWT_SECRET,
     passReqToCallback : true
 },

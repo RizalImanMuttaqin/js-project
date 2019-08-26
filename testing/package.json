@@ -1,0 +1,11 @@
+{
+  "name": "testing",
+  "type": "node",
+  "request": "launch",
+  "cwd": "${testing}",
+  "runtimeExecutable": "npm",
+  "runtimeArgs": [
+      "run-script", "debug"
+  ],
+  "port": 9229
+}

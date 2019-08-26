@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Route} from 'react-router-dom';
-import {  createStore, applyMiddleware } from 'redux';
+import {  createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import reduxThunk from 'redux-thunk';
 
@@ -31,11 +31,13 @@ axios.defaults.headers.common['Authorization']=jwtToken;
 // Learn more about service workers: https://bit.ly/CRA-PWA
 ReactDOM.render(
     <Provider store={createStore(reducers, {
+       
         auth: {
             token : jwtToken,
             isAuthenticated : jwtToken ? true : false
         }
-    }, applyMiddleware(reduxThunk))}>
+    }, compose(applyMiddleware(reduxThunk), window.__REDUX_DEVTOOLS_EXTENSION__ !== undefined ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f) 
+        )}>
     <BrowserRouter>
     <App>
         <Route exact path="/" component={Home} />

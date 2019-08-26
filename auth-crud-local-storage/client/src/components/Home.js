@@ -22,16 +22,16 @@ class Home extends Component{
                     </thead>
                     <tbody>
                         {this.props.todo.data <= 0
-                            ? <tr><td colspan="4" style={{textAlign:"center"}}>Data empty</td></tr>
+                            ? <tr><td colSpan="4" style={{textAlign:"center"}}>Data empty</td></tr>
                             : this.props.todo.data.map((todo, key) => (
                                 <tr key={key}>
                                     <td className={todo.todo_completed ? 'completed' : null }>{todo.todo_description}</td>
                                     <td className={todo.todo_completed ? 'completed' : null }>{todo.todo_responsible}</td>
                                     <td className={todo.todo_completed ? 'completed' : null }>{todo.todo_priority}</td>
                                     <td>
-                                        <b>google</b> : { todo.create_by[0].google ? todo.create_by[0].google.name : null }<br/>
+                                        {/* <b>google</b> : { todo.create_by[0].google ? todo.create_by[0].google.name : null }<br/>
                                         <b>facebook</b> : { todo.create_by[0].facebook ? todo.create_by[0].facebook.name : null }<br/>
-                                        <b>local</b>  : { todo.create_by[0].local ? todo.create_by[0].local.email : null }<br/>
+                                        <b>local</b>  : { todo.create_by[0].local ? todo.create_by[0].local.email : null }<br/> */}
                                     </td>
                                 </tr>
                             ))}

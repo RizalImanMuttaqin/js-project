@@ -1,0 +1,99 @@
+
+# ref : https://www.express-gateway.io/docs/configuration/
+http:
+  port: 8080
+admin:
+  port: 9876
+  host: localhost
+
+# ref : http://www.express-gateway.io/docs/configuration/gateway.config.yml/apiEndpoints
+apiEndpoints:
+  apiphp:
+    host: localhost
+    paths: ['/laravel', '/laravel/*']
+  apijs:
+    host: localhost
+    paths: ['/users/todo/*']
+    # - '/users/todo/'
+    # - '/users/todo/list`'
+  apijspass:
+    host: localhost
+    paths: ['/users/todo/']
+
+# ref: http://www.express-gateway.io/docs/configuration/gateway.config.yml/serviceEndpoints
+serviceEndpoints:
+  JSservice:
+    url: 'http://localhost:5000'
+  PHPservice:
+    url: 'http://localhost:8000'
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+  - log
+  - jwt
+# ref : https://www.express-gateway.io/docs/configuration/gateway.config.yml/pipelines
+pipelines:
+  JSpipelinespass:
+    apiEndpoints:
+      - apijspass
+    policies:
+        -
+          jwt:
+              action:
+              # jwtExtractor : authBearer
+                checkCredentialExistence: false
+                secretOrPublicKey: sskntlmns3797 
+                passThrough: true    
+        -
+          proxy: # policy name
+            -    # array of objects with condition\action properties
+              action:
+                serviceEndpoint: JSservice
+        
+  JSpipelines:
+    apiEndpoints:
+      - apijs
+    policies:
+      -
+        log: # policy name
+          -  # executed only after previous two actions are completed
+            action: # no condition, always executed
+              message: "TOKEN RECEIVE: ${req.headers.authorization.split(' ')[1]}"
+      - jwt:
+            action:
+              # jwtExtractor : authBearer
+              checkCredentialExistence: false
+              secretOrPublicKey: sskntlmns3797 
+              # passThrough: true
+
+      -
+        proxy: # policy name
+          -    # array of objects with condition\action properties
+            action:
+              serviceEndpoint: JSservice
+  PHPpipelines:
+    apiEndpoints:
+      - apiphp
+    policies:
+      
+      # - expression:
+      #     - action:
+      #         jscode: 'req.headers.authorization = "Bearer hgfdjkashkfhdas".split(" ")[1]; '
+      - log:
+          - action:
+              message: "TOKEN RECEIVE: ${req.headers.authorization.split(' ')[1]}"
+      - jwt:
+            action:
+              # jwtExtractor : authBearer
+              checkCredentialExistence: false
+              secretOrPublicKey: sskntlmns3797 
+        # - key-auth: # uncomment to enable key-auth
+      - proxy:
+          action:
+            serviceEndpoint: PHPservice

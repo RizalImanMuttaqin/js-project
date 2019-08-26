@@ -5,12 +5,12 @@ const Bcrypt = require('../helpers/bcrypt')
 const { JWT_SECRET } = require('../config/config')
 signToken = async function (user) {
     // console.log(JWT_SECRET);  
-    return JWT.sign({
+    return "Bearer "+JWT.sign({
         iss : "authapp",
         sub : user.id,
         iat : new Date().getTime(),
         exp : new Date().setDate(new Date().getDate() + 1) 
-    }, JWT_SECRET);
+}, JWT_SECRET);
 }
 
 module.exports = {

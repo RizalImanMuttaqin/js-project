@@ -1,0 +1,43 @@
+http:
+  port: 8080
+admin:
+  port: 9876
+  host: localhost
+apiEndpoints:
+  # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/apiEndpoints
+  api:
+    - host: localhost
+      paths: ['/', '/error']
+      methods: ["GET"]
+      scopes:
+        - member  
+    - host: localhost
+      paths: ['/users/login', '/error']
+      methods: ["POST"]
+serviceEndpoints:
+  # see: http://www.express-gateway.io/docs/configuration/gateway.config.yml/serviceEndpoints
+  app:
+    url: "http://localhost:1234"
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+pipelines:
+  # see: https://www.express-gateway.io/docs/configuration/gateway.config.yml/pipelines
+  default:
+    apiEndpoints:
+      - api
+    policies:
+      log: # policy name
+        - action:    # array of condition/actions objects
+          message: ${req.method} ${req.originalUrl} # parameter for log action
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: app 

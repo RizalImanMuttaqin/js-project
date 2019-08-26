@@ -58,7 +58,7 @@ import * as actions from '../actions';
                         </thead>
                         <tbody>
                             {this.props.todo <= 0
-                                ? <tr><td colspan="5" style={{textAlign:"center"}}>Data empty</td></tr>
+                                ? <tr><td colSpan="5" style={{textAlign:"center"}}>Data empty</td></tr>
                                 : this.props.todo.map((todo, key) => (
                                     <tr key={key}>
                                         <td className={todo.todo_completed ? 'completed' : null }>{todo.todo_description}</td>
